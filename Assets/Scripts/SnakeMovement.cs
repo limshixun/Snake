@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class SnakeMovement : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform segmentPrefab;
     private Vector2 _direction;
     private Vector2 _nextDirection;
@@ -16,7 +15,6 @@ public class SnakeMovement : MonoBehaviour
     void Awake()
     {
         _segments = new List<Transform>();
-        rb = GetComponent<Rigidbody2D>();
     }
 
     void Start()
@@ -117,5 +115,14 @@ public class SnakeMovement : MonoBehaviour
         Grow();
     }
 
+    public List<Vector3> GetSegments()
+    {
+        var positions = new List<Vector3>();
+        foreach (Transform t in _segments)
+        {
+            positions.Add(t.position);
+        }
+        return positions;
+    }
 
 }

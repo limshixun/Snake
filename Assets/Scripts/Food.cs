@@ -2,22 +2,21 @@ using UnityEngine;
 
 public class Food : MonoBehaviour
 {
-
-    [SerializeField] private BoxCollider2D gridArea;
+    // [SerializeField] private BoxCollider2D gridArea;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    void Awake()
     {
         RandomizePosition();
+
     }
 
     void RandomizePosition()
     {
-        Bounds bounds = this.gridArea.bounds;
+        var availableGrid = GridManager.Instance.GetAvaiableGrids();
+        int randIdx = Random.Range(0,availableGrid.Count);
 
-        float x = Mathf.Round(Random.Range(bounds.min.x, bounds.max.y));
-        float y = Mathf.Round(Random.Range(bounds.min.y, bounds.max.y));
-
-        this.transform.position = new Vector3(x, y, 0.0f);
+        this.transform.position = availableGrid[randIdx];
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
