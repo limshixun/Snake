@@ -1,21 +1,26 @@
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Food : MonoBehaviour
 {
-    // [SerializeField] private BoxCollider2D gridArea;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private BoxCollider2D bc;
+    [SerializeField] private SpriteRenderer sr;
 
-    void Awake()
+    void Start()
     {
-        RandomizePosition();
-
+        StartCoroutine(RandomizePosition());
     }
 
-    void RandomizePosition()
+    private IEnumerator RandomizePosition()
     {
+        GridManager.Instance.CheckDestroyFood(gameObject);
+        float randTime = Random.Range(0f, 10f);
+        ToggleFood(false);
+        yield return new WaitForSeconds(randTime);
+        ToggleFood(true);
         var availableGrid = GridManager.Instance.GetAvaiableGrids();
-        int randIdx = Random.Range(0,availableGrid.Count);
-
+        int randIdx = Random.Range(0, availableGrid.Count);
         this.transform.position = availableGrid[randIdx];
     }
 
@@ -23,7 +28,13 @@ public class Food : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            RandomizePosition();    
+            StartCoroutine(RandomizePosition());
         }
+    }
+
+    private void ToggleFood(bool on)
+    {
+        bc.enabled = on;
+        sr.enabled = on;
     }
 }

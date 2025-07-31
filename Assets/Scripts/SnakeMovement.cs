@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Burst.Intrinsics;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -9,7 +10,6 @@ public class SnakeMovement : MonoBehaviour
     [SerializeField] private Transform segmentPrefab;
     private Vector2 _direction;
     private Vector2 _nextDirection;
-    private float _fixedTimestep = 0.1f;
     private List<Transform> _segments;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -19,7 +19,7 @@ public class SnakeMovement : MonoBehaviour
 
     void Start()
     {
-        ResetState();
+        ResetSnake();
     }
 
     // Update is called once per frame
@@ -67,10 +67,6 @@ public class SnakeMovement : MonoBehaviour
         bool isOppositeDirection = (nextDirection + _direction) == Vector2.zero;
         Vector3 nextDirectionV3 = nextDirection;
         bool isFracture = _segments[0].position + nextDirectionV3 == _segments[1].position;
-        if (isFracture)
-        {
-            Debug.Log(isFracture);
-        }
         return isOppositeDirection || isFracture;
     }
 
@@ -89,17 +85,19 @@ public class SnakeMovement : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        var gm = GameManager.Instance;
         if (collision.tag == "Food")
         {
             Grow();
+            gm.increseScore(1);
         }
         if (collision.tag == "Obstacle")
         {
-            ResetState();
+            gm.gameOver(false);
         }
     }
 
-    private void ResetState()
+    public void ResetSnake()
     {
         for (int i = 1; i < _segments.Count; i++)
         {
@@ -108,8 +106,6 @@ public class SnakeMovement : MonoBehaviour
         this.transform.position = Vector3.zero;
         _direction = Vector2.right;
         _nextDirection = _direction;
-        _fixedTimestep = 0.1f;
-        Time.fixedDeltaTime = _fixedTimestep;
         _segments.Clear();
         _segments.Add(this.transform);
         Grow();
